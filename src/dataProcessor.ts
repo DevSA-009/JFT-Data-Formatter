@@ -10,12 +10,12 @@ import {
 export class DataProcessor {
   public validRows: OrderRow[] = [];
   public summaryData: Record<string, SummaryData> = {};
-  public missedCount: number = 0;
+  public invalidCount: number = 0;
 
   processText(text: string): void {
     this.validRows = [];
     this.summaryData = {};
-    this.missedCount = 0;
+    this.invalidCount = 0;
 
     text.split("\n").forEach((line) => {
       if (!line.trim()) return;
@@ -23,45 +23,47 @@ export class DataProcessor {
       const validation = validateRow(row);
 
       if (!validation.valid) {
-        this.validRows.push({
-          ...row,
-          MISSED: true,
-          REASON: validation.reason,
-        });
-        this.missedCount++;
+        this.invalidCount++;
         return;
       }
 
-      this.validRows.push({ ...row, MISSED: false });
+      this.validRows.push({ ...row, VALID: true });
 
       if (!this.summaryData[row.SIZE]) {
-        this.summaryData[row.SIZE] = { TOTAL: 0, LONG: 0, SHORT: 0, PANT: 0 };
+        this.summaryData[row.SIZE] = {
+          TOTAL: 0,
+          LONG: 0,
+          SHORT: 0,
+          RIB: 0,
+          PANT: 0,
+        };
       }
 
       this.summaryData[row.SIZE].TOTAL++;
       if (row.SLEEVE === "LONG") this.summaryData[row.SIZE].LONG++;
       if (row.SLEEVE === "SHORT") this.summaryData[row.SIZE].SHORT++;
+      if (row.RIB === "CUFF" || row.RIB === "YES")
+        this.summaryData[row.SIZE].RIB++;
       if (row.PANT === "LONG" || row.PANT === "SHORT")
         this.summaryData[row.SIZE].PANT++;
     });
   }
 
   analyzeSummary(): AnalysisResult {
-    const hasName = this.validRows.some(
-      (r) => !r.MISSED && r.NAME && r.NAME !== "",
-    );
-    const hasNumber = this.validRows.some(
-      (r) => !r.MISSED && r.NUMBER && r.NUMBER !== "",
-    );
-    const hasSleeve = this.validRows.some(
-      (r) => !r.MISSED && r.SLEEVE && r.SLEEVE !== "",
-    );
-    const hasRib = this.validRows.some(
-      (r) => !r.MISSED && r.RIB && r.RIB !== "" && r.RIB !== "NO",
-    );
-    const hasPant = this.validRows.some(
-      (r) => !r.MISSED && r.PANT && r.PANT !== "" && r.PANT !== "NO",
-    );
+    const hasItems = {
+      NAME: this.validRows.some((r) => r.VALID && r.NAME && r.NAME !== ""),
+      NUMBER: this.validRows.some(
+        (r) => r.VALID && r.NUMBER && r.NUMBER !== "",
+      ),
+      SIZE: this.validRows.some((r) => r.VALID && r.SIZE),
+      SLEEVE: this.validRows.some((r) => r.VALID && r.SLEEVE),
+      RIB: this.validRows.some(
+        (r) => (r.VALID && r.RIB && r.RIB === "YES") || r.RIB === "CUFF",
+      ),
+      PANT: this.validRows.some(
+        (r) => (r.VALID && r.PANT === "LONG") || r.PANT === "SHORT",
+      ),
+    };
 
     const getInfo = (types: Set<string>) => {
       if (types.has("LONG") && types.has("SHORT")) return "Long & Short";
@@ -71,27 +73,21 @@ export class DataProcessor {
     };
 
     const sleeveTypes = new Set(
-      this.validRows
-        .filter((r) => !r.MISSED && r.SLEEVE && r.SLEEVE !== "")
-        .map((r) => r.SLEEVE),
+      this.validRows.filter((r) => r.VALID && r.SLEEVE).map((r) => r.SLEEVE),
     );
     const ribTypes = new Set(
       this.validRows
-        .filter((r) => !r.MISSED && r.RIB && r.RIB !== "" && r.RIB !== "NO")
+        .filter((r) => r.VALID && r.RIB && r.RIB !== "NO")
         .map((r) => r.RIB),
     );
     const pantTypes = new Set(
       this.validRows
-        .filter((r) => !r.MISSED && r.PANT && r.PANT !== "" && r.PANT !== "NO")
+        .filter((r) => r.VALID && r.PANT && r.PANT !== "NO")
         .map((r) => r.PANT),
     );
 
     return {
-      hasName,
-      hasNumber,
-      hasSleeve,
-      hasRib,
-      hasPant,
+      hasItems,
       sleeveInfo: getInfo(sleeveTypes),
       ribInfo: getInfo(ribTypes),
       pantInfo: getInfo(pantTypes),
@@ -99,6 +95,7 @@ export class DataProcessor {
       hasShortInSummary: Object.values(this.summaryData).some(
         (s) => s.SHORT > 0,
       ),
+      hasRIBInSummary: Object.values(this.summaryData).some((s) => s.RIB > 0),
       hasPantInSummary: Object.values(this.summaryData).some((s) => s.PANT > 0),
     };
   }
@@ -141,26 +138,26 @@ export class DataProcessor {
     text += "\n\nDETAILS:\n========\n\n";
 
     sortSizes([
-      ...new Set(this.validRows.filter((r) => !r.MISSED).map((r) => r.SIZE)),
+      ...new Set(this.validRows.filter((r) => r.VALID).map((r) => r.SIZE)),
     ]).forEach((size) => {
       text += `${formatSizeForDisplay(size)}:\n`;
       this.validRows
-        .filter((r) => r.SIZE === size && !r.MISSED)
+        .filter((r) => r.SIZE === size && r.VALID)
         .forEach((r, idx) => {
           text += `  ${idx + 1}. `;
-          if (analysis.hasName && r.NAME) text += `${r.NAME} `;
-          if (analysis.hasNumber && r.NUMBER) text += `[${r.NUMBER}]`;
+          if (analysis.hasItems.NAME && r.NAME) text += `${r.NAME} `;
+          if (analysis.hasItems.NUMBER && r.NUMBER) text += `[${r.NUMBER}]`;
           text += "\n";
         });
       text += "\n";
     });
 
-    if (this.missedCount > 0) text += `\nINVALID ROWS: ${this.missedCount}\n`;
+    if (this.invalidCount > 0) text += `\nINVALID ROWS: ${this.invalidCount}\n`;
     return text;
   }
 
   exportToJSON(): string {
-    const filtered = this.validRows.filter((r) => !r.MISSED);
+    const filtered = this.validRows.filter((r) => r.VALID);
     const grouped: Record<string, any[]> = {};
     sortSizes([...new Set(filtered.map((r) => r.SIZE))]).forEach((size) => {
       grouped[size] = filtered

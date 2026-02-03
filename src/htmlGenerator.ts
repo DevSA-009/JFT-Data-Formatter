@@ -1,5 +1,11 @@
 // src/htmlGenerator.ts
-import { AnalysisResult, SummaryData, OrderRow } from "./types";
+import {
+  AnalysisResult,
+  SummaryData,
+  OrderRow,
+  TableBaseHeads,
+  OrderKeywords,
+} from "./types";
 import { formatSizeForDisplay, sortSizes } from "./utils";
 
 export class HTMLGenerator {
@@ -17,7 +23,7 @@ export class HTMLGenerator {
     analysis: AnalysisResult,
     imgSrc: string,
   ): string {
-    const dName = pName.trim() || "_______________";
+    const dName = pName.trim() || "________";
     return `<div class="top-info-grid">
       <div class="image-side"><img src="${imgSrc}" alt="Design" /></div>
       <div class="info-grid">
@@ -77,49 +83,102 @@ export class HTMLGenerator {
 
   generateDetailTable(analysis: AnalysisResult): string {
     let serial = 1;
+
+    const finalTableHeads = TableBaseHeads.filter(
+      (head) => analysis.hasItems[head],
+    );
+
     let html =
       '<div class="section-header"><h2>Detail List</h2></div><table class="resizable-table"><thead><tr>';
+
     if (this.showIndex) html += "<th>SN</th>";
-    if (analysis.hasName) html += "<th>NAME</th>";
-    if (analysis.hasNumber) html += "<th>NUMBER</th>";
-    html += "<th>SIZE</th>";
-    if (analysis.hasSleeve) html += "<th>SLEEVE</th>";
-    if (analysis.hasRib) html += "<th>RIB</th>";
-    if (analysis.hasPant) html += "<th>PANT</th>";
+    finalTableHeads.forEach((head) => (html += `<th>${head}</th>`));
+
     html += "</tr></thead><tbody>";
 
     sortSizes([
-      ...new Set(this.validRows.filter((r) => !r.MISSED).map((r) => r.SIZE)),
+      ...new Set(this.validRows.filter((r) => r.VALID).map((r) => r.SIZE)),
     ]).forEach((size) => {
       this.validRows
-        .filter((r) => r.SIZE === size && !r.MISSED)
+        .filter((r) => r.SIZE === size && r.VALID)
         .forEach((r) => {
-          html += `<tr class="${r.SLEEVE === "LONG" ? "long-sleeve" : ""}">`;
+          const isLong = r.SLEEVE === "LONG";
+          const rowClass = isLong ? "long-sleeve" : "";
+
+          html += `<tr class="${rowClass}">`;
+
           if (this.showIndex) html += `<td>${serial++}</td>`;
-          if (analysis.hasName)
-            html += `<td class="${!r.NAME ? "empty-cell" : ""}">${r.NAME || "—"}</td>`;
-          if (analysis.hasNumber)
-            html += `<td class="${!r.NUMBER ? "empty-cell" : ""}">${r.NUMBER || "—"}</td>`;
-          html += `<td>${formatSizeForDisplay(r.SIZE)}</td>`;
-          if (analysis.hasSleeve) html += `<td>${r.SLEEVE || "—"}</td>`;
-          if (analysis.hasRib) html += `<td>${r.RIB || "—"}</td>`;
-          if (analysis.hasPant) html += `<td>${r.PANT || "—"}</td>`;
+
+          finalTableHeads.forEach((head) => {
+            let mainValue = r[head];
+            let fallbackValue = "-";
+
+            if (head === "SIZE") {
+              mainValue = formatSizeForDisplay(mainValue);
+            }
+
+            if (head === "SLEEVE") {
+              fallbackValue = "SHORT";
+            }
+
+            if (
+              head !== "NAME" &&
+              head !== "NUMBER" &&
+              head !== "SLEEVE" &&
+              head !== "SIZE" &&
+              mainValue === "NO"
+            ) {
+              mainValue = "";
+            }
+
+            html += `<td>${mainValue || fallbackValue}</td>`;
+          });
           html += "</tr>";
         });
     });
 
     this.validRows
-      .filter((r) => r.MISSED)
+      .filter((r) => !r.VALID)
       .forEach((r) => {
-        const cs =
-          (this.showIndex ? 1 : 0) +
-          (analysis.hasName ? 1 : 0) +
-          (analysis.hasNumber ? 1 : 0) +
-          1 +
-          (analysis.hasSleeve ? 1 : 0) +
-          (analysis.hasRib ? 1 : 0) +
-          (analysis.hasPant ? 1 : 0);
-        html += `<tr class="warn-row"><td colspan="${cs}">Invalid: ${r.REASON || "Unknown"}</td></tr>`;
+        const reasonHead = r.REASON;
+
+        if (
+          (reasonHead as TableBaseHeads | `${OrderKeywords.STRUCTURE}`) ===
+          "STRUCTURE"
+        ) {
+          html += `<tr class="error-row">Invalid Structure</tr>`;
+          return;
+        }
+
+        html += `<tr class="warn-row">`;
+
+        if (this.showIndex) html += `<td>${serial++}</td>`;
+        finalTableHeads.forEach((head) => {
+          let mainValue = r[head];
+          let fallbackValue = "-";
+
+          if (head === "SIZE" && reasonHead !== "SIZE") {
+            mainValue = formatSizeForDisplay(mainValue);
+          }
+
+          if (head === "SLEEVE") {
+            fallbackValue = "SHORT";
+          }
+
+          if (
+            head !== "NAME" &&
+            head !== "NUMBER" &&
+            head !== "SLEEVE" &&
+            head !== "SIZE" &&
+            mainValue === "NO"
+          ) {
+            mainValue = "";
+          }
+
+          html += `<td class="${head === reasonHead ? "invalid-ceil" : ""}">${mainValue || fallbackValue}</td>`;
+        });
+
+        html += "</tr>";
       });
 
     return html + "</tbody></table>";
@@ -132,7 +191,7 @@ export class HTMLGenerator {
     analysis: AnalysisResult,
     imgSrc: string,
   ): string {
-    const dName = pName.trim() || "_______________";
+    const dName = pName.trim() || "________";
     return `<div class="split-layout"><div class="left-column">
       <div class="image-container"><img src="${imgSrc}" alt="Design" /></div>
       <div class="info-block">

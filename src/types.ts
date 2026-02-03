@@ -1,33 +1,70 @@
 // src/types.ts - Type definitions
 
-export interface OrderRow {
-  SIZE: string;
+export enum OrderKeywords {
+  NAME = "NAME",
+  NUMBER = "NUMBER",
+  SIZE = "SIZE",
+  SLEEVE = "SLEEVE",
+  LONG = "LONG",
+  SHORT = "SHORT",
+  PANT = "PANT",
+  RIB = "RIB",
+  CUFF = "CUFF",
+  YES = "YES",
+  NO = "NO",
+  TOTAL = "TOTAL",
+  STRUCTURE = "STRUCTURE",
+}
+
+export const TableBaseHeads = [
+  `${OrderKeywords.NAME}`,
+  `${OrderKeywords.NUMBER}`,
+  `${OrderKeywords.SIZE}`,
+  `${OrderKeywords.SLEEVE}`,
+  `${OrderKeywords.RIB}`,
+  `${OrderKeywords.PANT}`,
+] as const;
+
+export const SummaryTableHeads = [
+  `${OrderKeywords.TOTAL}`,
+  `${OrderKeywords.LONG}`,
+  `${OrderKeywords.SHORT}`,
+  `${OrderKeywords.RIB}`,
+  `${OrderKeywords.PANT}`,
+] as const;
+
+export type TableBaseHeads = {
   NAME: string;
   NUMBER: string;
-  SLEEVE: string;
-  RIB: string;
-  PANT: string;
-  MISSED?: boolean;
-  REASON?: string;
+  SIZE: (typeof SIZE_ORDER)[number];
+  SLEEVE: `${OrderKeywords.SHORT}` | `${OrderKeywords.LONG}`;
+  RIB: `${OrderKeywords.NO}` | `${OrderKeywords.CUFF}` | `${OrderKeywords.YES}`;
+  PANT:
+    | `${OrderKeywords.SHORT}`
+    | `${OrderKeywords.LONG}`
+    | `${OrderKeywords.NO}`;
+};
+
+export interface OrderRow extends TableBaseHeads {
+  VALID: boolean;
+  REASON?: keyof TableBaseHeads;
 }
 
 export interface SummaryData {
   TOTAL: number;
   LONG: number;
   SHORT: number;
+  RIB: number;
   PANT: number;
 }
 
 export interface AnalysisResult {
-  hasName: boolean;
-  hasNumber: boolean;
-  hasSleeve: boolean;
-  hasRib: boolean;
-  hasPant: boolean;
+  hasItems: Record<keyof TableBaseHeads, boolean>;
   sleeveInfo: string;
   ribInfo: string;
   pantInfo: string;
   hasLongInSummary: boolean;
+  hasRIBInSummary: boolean;
   hasShortInSummary: boolean;
   hasPantInSummary: boolean;
 }
@@ -41,7 +78,7 @@ export type FormatType = "format2" | "format4" | "format5";
 
 export type ToastType = "info" | "success" | "error";
 
-export const SIZE_ORDER: readonly string[] = [
+export const SIZE_ORDER = [
   "XS",
   "S",
   "M",
@@ -66,4 +103,4 @@ export const STORAGE_KEYS = {
   ORDER_DATA: "order_formatter_last_data",
 } as const;
 
-export const PLACEHOLDER_IMAGE = "/placeholder.svg";
+export const PLACEHOLDER_IMAGE = "img_place_holder_1.svg";

@@ -77,7 +77,7 @@ export class OrderFormatterApp {
     const gen = new HTMLGenerator(
       this.dp.validRows,
       this.dp.summaryData,
-      this.dp.missedCount,
+      this.dp.invalidCount,
       this.showIndex,
     );
     const pName = pn?.value || "",
@@ -110,7 +110,7 @@ export class OrderFormatterApp {
     const gen = new HTMLGenerator(
       this.dp.validRows,
       this.dp.summaryData,
-      this.dp.missedCount,
+      this.dp.invalidCount,
       this.showIndex,
     );
     const pName = pn?.value || "",
@@ -149,7 +149,7 @@ export class OrderFormatterApp {
   }
 
   private copyAsJSON(): void {
-    if (this.dp.validRows.filter((r) => !r.MISSED).length === 0) {
+    if (this.dp.validRows.filter((r) => r.VALID).length === 0) {
       showToast("No valid data", "error");
       return;
     }

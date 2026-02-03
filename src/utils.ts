@@ -32,28 +32,44 @@ export const parseLine = (line: string): OrderRow => {
     SLEEVE: parts[3] !== undefined ? (parts[3] || "").toUpperCase() : "",
     RIB: parts[4] !== undefined ? (parts[4] || "").toUpperCase() : "",
     PANT: parts[5] !== undefined ? (parts[5] || "").toUpperCase() : "",
-  };
+  } as OrderRow;
 };
 
 export const validateRow = (row: OrderRow): ValidationResult => {
+  // Check if any required field is undefined
+  if (
+    row.SIZE === undefined ||
+    row.NAME === undefined ||
+    row.NUMBER === undefined ||
+    row.SLEEVE === undefined ||
+    row.RIB === undefined ||
+    row.PANT === undefined
+  ) {
+    return { valid: false, reason: "STRUCTURE" };
+  }
+
   if (!row.SIZE || !SIZE_ORDER.includes(row.SIZE))
-    return { valid: false, reason: "Invalid Size" };
+    return { valid: false, reason: "SIZE" };
   if (row.SLEEVE && row.SLEEVE !== "LONG" && row.SLEEVE !== "SHORT")
-    return { valid: false, reason: "Invalid Sleeve" };
-  if (row.RIB && row.RIB !== "LONG" && row.RIB !== "SHORT" && row.RIB !== "NO")
-    return { valid: false, reason: "Invalid RIB" };
+    return { valid: false, reason: "SLEEVE" };
+  if (row.RIB && row.RIB !== "CUFF" && row.RIB !== "YES" && row.RIB !== "NO")
+    return { valid: false, reason: "RIB" };
   if (
     row.PANT &&
     row.PANT !== "LONG" &&
     row.PANT !== "SHORT" &&
     row.PANT !== "NO"
   )
-    return { valid: false, reason: "Invalid PANT" };
+    return { valid: false, reason: "PANT" };
   return { valid: true };
 };
 
 export const sortSizes = (sizes: string[]): string[] => {
-  return sizes.sort((a, b) => SIZE_ORDER.indexOf(a) - SIZE_ORDER.indexOf(b));
+  return sizes.sort(
+    (a, b) =>
+      SIZE_ORDER.indexOf(a as (typeof SIZE_ORDER)[number]) -
+      SIZE_ORDER.indexOf(b as (typeof SIZE_ORDER)[number]),
+  );
 };
 
 export const showToast = (message: string, type: ToastType = "info"): void => {
@@ -62,7 +78,7 @@ export const showToast = (message: string, type: ToastType = "info"): void => {
   toast.textContent = message;
   toast.className = `toast ${type}`;
   toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 3000);
+  setTimeout(() => toast.classList.remove("show"), 200);
 };
 
 export const getElement = <T extends HTMLElement>(id: string): T | null => {
