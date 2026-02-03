@@ -2,121 +2,122 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Formatter</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Formatter</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <!-- INPUT PAGE -->
-    <div id="inputPage" class="page">
-        <div class="container">
-            <header class="app-header">
-                <h1>Order Formatter</h1>
-            </header>
+  <!-- INPUT PAGE -->
+  <div id="inputPage" class="page">
+    <div class="container">
+      <header class="app-header">
+        <h1>Order Formatter</h1>
+      </header>
 
-            <!-- Format Selection -->
-            <div class="format-selection">
-                <h3>Select Print Format</h3>
-                <div class="format-options">
-                    <label>
-                        <input type="radio" name="format" value="format2" checked>
-                        <span>Format 2: Standard Layout</span>
-                    </label>
-                    <label>
-                        <input type="radio" name="format" value="format4">
-                        <span>Format 4: Detailed</span>
-                    </label>
-                    <label>
-                        <input type="radio" name="format" value="format5">
-                        <span>Format 5: Tab Split View</span>
-                    </label>
-                </div>
-            </div>
-
-            <!-- Main Content -->
-            <div class="main-content">
-                <!-- Left: Input Section (60%) -->
-                <div class="input-section">
-                    <label for="inputText">Order Data</label>
-                    <textarea id="inputText" placeholder="Paste order text here...
-Example: M --- Name --- 10 --- LONG --- LONG --- YES"></textarea>
-                </div>
-
-                <!-- Right: Info Section (40%) -->
-                <div class="info-section">
-                    <div class="info-card">
-                        <label for="partyName">Party Name</label>
-                        <input type="text" id="partyName" placeholder="Enter party name..." value="">
-                    </div>
-                    <div class="info-card">
-                        <label for="jerseyType">Jersey Type</label>
-                        <select id="jerseyType">
-                            <option value="POLO">POLO</option>
-                            <option value="T-SHIRT">T-SHIRT</option>
-                            <option value="V Neck">V Neck</option>
-                        </select>
-                    </div>
-                    <div class="info-card">
-                        <label for="fabricsType">Fabrics Type</label>
-                        <select id="fabricsType">
-                            <option value="PP">PP</option>
-                            <option value="THICK PP">THICK PP</option>
-                            <option value="JACQUARD">JACQUARD</option>
-                            <option value="ROLEX">ROLEX</option>
-                            <option value="MESH">MESH</option>
-                            <option value="BOX MESH">BOX MESH</option>
-                            <option value="THICK MESH">THICK MESH</option>
-                        </select>
-                    </div>
-                    <div class="info-card">
-                        <label>Image</label>
-                        <button class="btn btn-secondary" id="imageSelectBtn">
-                            Select Image (Ctrl+I)
-                        </button>
-                        <input type="file" id="imageInput" accept="image/*" style="display: none;">
-                    </div>
-                    <div id="imagePreviewSection" style="display: none;">
-                        <div id="imagePreview"></div>
-                        <button class="btn btn-danger btn-sm" id="removeImageBtn">Remove</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Action Button -->
-            <div class="btn-group">
-                <button class="btn btn-primary btn-large" id="formatBtn">
-                    Format Orders (Ctrl+F)
-                </button>
-            </div>
+      <!-- Format Selection -->
+      <div class="format-selection">
+        <h3>Select Print Format</h3>
+        <div class="format-options">
+          <label>
+            <input type="radio" name="format" value="format2" checked>
+            <span>Format 2: Standard Layout</span>
+          </label>
+          <label>
+            <input type="radio" name="format" value="format4">
+            <span>Format 4: Detailed</span>
+          </label>
+          <label>
+            <input type="radio" name="format" value="format5">
+            <span>Format 5: Tab Split View</span>
+          </label>
         </div>
-    </div>
+      </div>
 
-    <!-- OUTPUT PAGE -->
-    <div id="outputPage" class="page" style="display: none;">
-        <div class="container">
-            <header class="output-header">
-                <h1>Order Formatter</h1>
-                <div class="output-actions">
-                    <button class="btn btn-secondary" id="backBtn">← Back</button>
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="showIndexCheckbox">
-                        <span>Show Index</span>
-                    </label>
-                    <button class="btn btn-success" id="copyBtnOutput">Copy JSON (Ctrl+C)</button>
-                    <button class="btn btn-print" id="printBtnOutput">Print / PDF (Ctrl+P)</button>
-                </div>
-            </header>
-
-            <div id="output" class="print-area"></div>
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- Left: Input Section (60%) -->
+        <div class="input-section">
+          <label for="inputText">Order Data</label>
+          <textarea id="inputText" placeholder="Paste order text here...
+Example: M --- Name --- 10 --- LONG --- LONG --- LONG"></textarea>
         </div>
+
+        <!-- Right: Info Section (40%) -->
+        <div class="info-section">
+          <div class="info-card">
+            <label for="partyName">Party Name</label>
+            <input type="text" id="partyName" placeholder="Enter party name..." value="">
+          </div>
+          <div class="info-card">
+            <label for="jerseyType">Jersey Type</label>
+            <select id="jerseyType">
+              <option value="POLO">POLO</option>
+              <option value="T-SHIRT">T-SHIRT</option>
+              <option value="V Neck">V Neck</option>
+            </select>
+          </div>
+          <div class="info-card">
+            <label for="fabricsType">Fabrics Type</label>
+            <select id="fabricsType">
+              <option value="PP">PP</option>
+              <option value="THICK PP">THICK PP</option>
+              <option value="JACQUARD">JACQUARD</option>
+              <option value="ROLEX">ROLEX</option>
+              <option value="MESH">MESH</option>
+              <option value="BOX MESH">BOX MESH</option>
+              <option value="THICK MESH">THICK MESH</option>
+            </select>
+          </div>
+          <div class="info-card">
+            <label>Image</label>
+            <button class="btn btn-secondary" id="imageSelectBtn">
+              Select Image (Ctrl+I)
+            </button>
+            <input type="file" id="imageInput" accept="image/*" style="display: none;">
+          </div>
+          <div id="imagePreviewSection" style="display: none;">
+            <div id="imagePreview"></div>
+            <button class="btn btn-danger btn-sm" id="removeImageBtn">Remove</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <div class="btn-group">
+        <button class="btn btn-primary btn-large" id="formatBtn">
+          Format Orders (Ctrl+F)
+        </button>
+      </div>
     </div>
+  </div>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="toast"></div>
+  <!-- OUTPUT PAGE -->
+  <div id="outputPage" class="page" style="display: none;">
+    <div class="container">
+      <header class="output-header">
+        <h1>Order Formatter</h1>
+        <div class="output-actions">
+          <button class="btn btn-secondary" id="backBtn">← Back</button>
+          <label class="checkbox-label">
+            <input type="checkbox" id="showIndexCheckbox">
+            <span>Show Index</span>
+          </label>
+          <button class="btn btn-info" id="copyPlainBtn">Copy Plain Text</button>
+          <button class="btn btn-success" id="copyBtnOutput">Copy JSON (Ctrl+C)</button>
+          <button class="btn btn-print" id="printBtnOutput">Print / PDF (Ctrl+P)</button>
+        </div>
+      </header>
 
-    <script src="script.js"></script>
+      <div id="output" class="print-area"></div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <script src="src/main.ts"></script>
 </body>
 
 </html>
