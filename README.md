@@ -1,4 +1,4 @@
-# Order Formatter - Vite + TypeScript
+# JFT Data Formatter - Vite + TypeScript
 
 ## 🚀 Features
 
@@ -85,4 +85,4 @@ Output will be in `dist/` folder.
 
 ---
 
-**By DevSA009**
+**By DevSA-009**

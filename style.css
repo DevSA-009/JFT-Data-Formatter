@@ -603,7 +603,7 @@ td.empty-cell {
   }
 
   #output::after {
-    content: "By DevSA009";
+    content: "By DevSA-009";
     display: block;
     text-align: right;
     font-size: 10.3px;
