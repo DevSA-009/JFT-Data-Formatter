@@ -21,38 +21,34 @@
                 <h3>Select Print Format</h3>
                 <div class="format-options">
                     <label>
-                        <input type="radio" name="format" value="format1">
-                        <span>Format 1: Compact All-in-One (1 Page)</span>
-                    </label>
-                    <label>
                         <input type="radio" name="format" value="format2" checked>
-                        <span>Format 2: Standard Layout (Multi-Page OK)</span>
+                        <span>Format 2: Standard Layout</span>
                     </label>
                     <label>
                         <input type="radio" name="format" value="format4">
-                        <span>Format 4: Detailed (Multi-Page OK)</span>
+                        <span>Format 4: Detailed</span>
                     </label>
                     <label>
                         <input type="radio" name="format" value="format5">
-                        <span>Format 5: Split View</span>
+                        <span>Format 5: Tab Split View</span>
                     </label>
                 </div>
             </div>
 
-            <!-- Main Content: Side by Side -->
+            <!-- Main Content -->
             <div class="main-content">
-                <!-- Left: Input Section -->
+                <!-- Left: Input Section (60%) -->
                 <div class="input-section">
                     <label for="inputText">Order Data</label>
                     <textarea id="inputText" placeholder="Paste order text here...
-Example: M --- Name --- 10 --- FULL --- YES"></textarea>
+Example: M --- Name --- 10 --- LONG --- LONG --- YES"></textarea>
                 </div>
 
-                <!-- Right: Info Section (Vertical) -->
+                <!-- Right: Info Section (40%) -->
                 <div class="info-section">
                     <div class="info-card">
                         <label for="partyName">Party Name</label>
-                        <input type="text" id="partyName" placeholder="Enter party name..." value="Party Name">
+                        <input type="text" id="partyName" placeholder="Enter party name..." value="">
                     </div>
                     <div class="info-card">
                         <label for="jerseyType">Jersey Type</label>
@@ -103,7 +99,11 @@ Example: M --- Name --- 10 --- FULL --- YES"></textarea>
             <header class="output-header">
                 <h1>Order Formatter</h1>
                 <div class="output-actions">
-                    <button class="btn btn-secondary" id="backBtn">← Back to Input</button>
+                    <button class="btn btn-secondary" id="backBtn">← Back</button>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="showIndexCheckbox">
+                        <span>Show Index</span>
+                    </label>
                     <button class="btn btn-success" id="copyBtnOutput">Copy JSON (Ctrl+C)</button>
                     <button class="btn btn-print" id="printBtnOutput">Print / PDF (Ctrl+P)</button>
                 </div>
