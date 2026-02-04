@@ -479,17 +479,25 @@ tr.long-sleeve:hover {
   background-color: #f2ede4 !important;
 }
 
+tr.error-row {
+  color: #cf222e;
+  font-weight: 600;
+}
+tr.error-row td {
+  border: 1px double #cf222e;
+}
+
 tr.warn-row {
   background-color: #fff5f5 !important;
-  color: #cf222e;
+  color: #d97706;
   font-weight: 600;
 }
 
 tr.warn-row td {
-  border: 2px double #cf222e;
+  border: 1px double #d97706;
 }
 
-td.invalid-cell {
+tr td.invalid-cell {
   border: 2px double #cf222e;
   background-color: #fff1f0;
 }

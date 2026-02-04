@@ -1,10 +1,10 @@
 // src/dataProcessor.ts
-import { OrderRow, SummaryData, AnalysisResult } from "./types";
+import { AnalysisResult, OrderKeywords, OrderRow, SummaryData } from "./types";
 import {
-  parseLine,
-  validateRow,
-  sortSizes,
   formatSizeForDisplay,
+  parseLine,
+  sortSizes,
+  validateRow,
 } from "./utils";
 
 export class DataProcessor {
@@ -24,10 +24,15 @@ export class DataProcessor {
 
       if (!validation.valid) {
         this.invalidCount++;
+        this.validRows.push({
+          ...row,
+          VALID: false,
+          REASON: validation.reason,
+        });
         return;
       }
 
-      this.validRows.push({ ...row, VALID: true });
+      this.validRows.push({ ...row, VALID: true, REASON: validation.reason });
 
       if (!this.summaryData[row.SIZE]) {
         this.summaryData[row.SIZE] = {
@@ -39,37 +44,38 @@ export class DataProcessor {
         };
       }
 
+      const { CUFF, LONG, RIB, SHORT } = OrderKeywords;
+
       this.summaryData[row.SIZE].TOTAL++;
-      if (row.SLEEVE === "LONG") this.summaryData[row.SIZE].LONG++;
-      if (row.SLEEVE === "SHORT") this.summaryData[row.SIZE].SHORT++;
-      if (row.RIB === "CUFF" || row.RIB === "YES")
-        this.summaryData[row.SIZE].RIB++;
-      if (row.PANT === "LONG" || row.PANT === "SHORT")
+      if (row.SLEEVE === LONG) this.summaryData[row.SIZE].LONG++;
+      if (row.SLEEVE === SHORT) this.summaryData[row.SIZE].SHORT++;
+      if (row.RIB === CUFF || row.RIB === RIB) this.summaryData[row.SIZE].RIB++;
+      if (row.PANT === LONG || row.PANT === SHORT)
         this.summaryData[row.SIZE].PANT++;
     });
   }
 
   analyzeSummary(): AnalysisResult {
+    const { LONG, SHORT, NO } = OrderKeywords;
+
     const hasItems = {
-      NAME: this.validRows.some((r) => r.VALID && r.NAME && r.NAME !== ""),
-      NUMBER: this.validRows.some(
-        (r) => r.VALID && r.NUMBER && r.NUMBER !== "",
-      ),
-      SIZE: this.validRows.some((r) => r.VALID && r.SIZE),
-      SLEEVE: this.validRows.some((r) => r.VALID && r.SLEEVE),
-      RIB: this.validRows.some(
-        (r) => (r.VALID && r.RIB && r.RIB === "YES") || r.RIB === "CUFF",
-      ),
-      PANT: this.validRows.some(
-        (r) => (r.VALID && r.PANT === "LONG") || r.PANT === "SHORT",
-      ),
+      NAME: this.validRows.some((r) => r.NAME),
+      NUMBER: this.validRows.some((r) => r.NUMBER),
+      SIZE: this.validRows.some((r) => r.SIZE),
+      SLEEVE: this.validRows.some((r) => r.SLEEVE),
+      RIB: this.validRows.some((r) => r.RIB && r.RIB !== NO),
+      PANT: this.validRows.some((r) => r.PANT && r.PANT !== NO),
     };
 
     const getInfo = (types: Set<string>) => {
-      if (types.has("LONG") && types.has("SHORT")) return "Long & Short";
-      if (types.has("LONG")) return "Long";
-      if (types.has("SHORT")) return "Short";
-      return "None";
+      if (types.has(LONG) && types.has(SHORT)) return `${LONG} & ${SHORT}`;
+      if (types.has(LONG)) return LONG;
+      if (types.has(SHORT)) return SHORT;
+      if (types.has(OrderKeywords.CUFF)) return OrderKeywords.CUFF;
+      if (types.has(OrderKeywords.RIB)) return OrderKeywords.RIB;
+      if (types.has(OrderKeywords.RIB) && OrderKeywords.CUFF)
+        return `${OrderKeywords.RIB} & ${OrderKeywords.CUFF}`;
+      return OrderKeywords.NONE;
     };
 
     const sleeveTypes = new Set(
@@ -77,12 +83,12 @@ export class DataProcessor {
     );
     const ribTypes = new Set(
       this.validRows
-        .filter((r) => r.VALID && r.RIB && r.RIB !== "NO")
+        .filter((r) => r.VALID && r.RIB && r.RIB !== NO)
         .map((r) => r.RIB),
     );
     const pantTypes = new Set(
       this.validRows
-        .filter((r) => r.VALID && r.PANT && r.PANT !== "NO")
+        .filter((r) => r.VALID && r.PANT && r.PANT !== NO)
         .map((r) => r.PANT),
     );
 
@@ -101,12 +107,12 @@ export class DataProcessor {
   }
 
   generatePlainText(
-    partyName: string,
+    clientName: string,
     jerseyType: string,
     fabricsType: string,
   ): string {
     const analysis = this.analyzeSummary();
-    let text = `Party Name: ${partyName || "_______________"}\nJersey Type: ${jerseyType}\nFabrics: ${fabricsType}\n`;
+    let text = `Client Name: ${clientName || "_______________"}\nJersey Type: ${jerseyType}\nFabrics: ${fabricsType}\n`;
     text += `Sleeve: ${analysis.sleeveInfo}\nRIB: ${analysis.ribInfo}\nPANT: ${analysis.pantInfo}\n\nSUMMARY:\n========\n`;
 
     let totalBody = 0,

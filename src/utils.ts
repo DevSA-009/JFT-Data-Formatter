@@ -1,5 +1,12 @@
 // src/utils.ts
-import { SIZE_ORDER, OrderRow, ValidationResult, ToastType } from "./types";
+import {
+  SIZE_ORDER,
+  OrderRow,
+  ValidationResult,
+  ToastType,
+  OrderKeywords,
+  TableBaseHeads,
+} from "./types";
 
 export const normalizeSizes = (size: string = ""): string => {
   size = size.toUpperCase().trim();
@@ -36,6 +43,8 @@ export const parseLine = (line: string): OrderRow => {
 };
 
 export const validateRow = (row: OrderRow): ValidationResult => {
+  const { CUFF, LONG, SHORT, NO, PANT, SIZE, RIB, SLEEVE, STRUCTURE } =
+    OrderKeywords;
   // Check if any required field is undefined
   if (
     row.SIZE === undefined ||
@@ -45,22 +54,17 @@ export const validateRow = (row: OrderRow): ValidationResult => {
     row.RIB === undefined ||
     row.PANT === undefined
   ) {
-    return { valid: false, reason: "STRUCTURE" };
+    return { valid: false, reason: STRUCTURE as keyof TableBaseHeads };
   }
 
   if (!row.SIZE || !SIZE_ORDER.includes(row.SIZE))
-    return { valid: false, reason: "SIZE" };
-  if (row.SLEEVE && row.SLEEVE !== "LONG" && row.SLEEVE !== "SHORT")
-    return { valid: false, reason: "SLEEVE" };
-  if (row.RIB && row.RIB !== "CUFF" && row.RIB !== "YES" && row.RIB !== "NO")
-    return { valid: false, reason: "RIB" };
-  if (
-    row.PANT &&
-    row.PANT !== "LONG" &&
-    row.PANT !== "SHORT" &&
-    row.PANT !== "NO"
-  )
-    return { valid: false, reason: "PANT" };
+    return { valid: false, reason: SIZE };
+  if (row.SLEEVE && row.SLEEVE !== LONG && row.SLEEVE !== SHORT)
+    return { valid: false, reason: SLEEVE };
+  if (row.RIB && row.RIB !== CUFF && row.RIB !== RIB && row.RIB !== NO)
+    return { valid: false, reason: RIB };
+  if (row.PANT && row.PANT !== LONG && row.PANT !== SHORT && row.PANT !== NO)
+    return { valid: false, reason: PANT };
   return { valid: true };
 };
 

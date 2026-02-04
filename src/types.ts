@@ -1,4 +1,5 @@
 // src/types.ts - Type definitions
+import placeHolderImg from "@assets/img_place_holder_1.svg";
 
 export enum OrderKeywords {
   NAME = "NAME",
@@ -12,7 +13,9 @@ export enum OrderKeywords {
   CUFF = "CUFF",
   YES = "YES",
   NO = "NO",
+  NONE = "None",
   TOTAL = "TOTAL",
+  QTY = "QUANTITY",
   STRUCTURE = "STRUCTURE",
 }
 
@@ -38,7 +41,7 @@ export type TableBaseHeads = {
   NUMBER: string;
   SIZE: (typeof SIZE_ORDER)[number];
   SLEEVE: `${OrderKeywords.SHORT}` | `${OrderKeywords.LONG}`;
-  RIB: `${OrderKeywords.NO}` | `${OrderKeywords.CUFF}` | `${OrderKeywords.YES}`;
+  RIB: `${OrderKeywords.NO}` | `${OrderKeywords.CUFF}` | `${OrderKeywords.RIB}`;
   PANT:
     | `${OrderKeywords.SHORT}`
     | `${OrderKeywords.LONG}`
@@ -71,7 +74,7 @@ export interface AnalysisResult {
 
 export interface ValidationResult {
   valid: boolean;
-  reason?: string;
+  reason?: keyof TableBaseHeads;
 }
 
 export type FormatType = "format2" | "format4" | "format5";
@@ -103,4 +106,4 @@ export const STORAGE_KEYS = {
   ORDER_DATA: "order_formatter_last_data",
 } as const;
 
-export const PLACEHOLDER_IMAGE = "img_place_holder_1.svg";
+export const PLACEHOLDER_IMAGE = placeHolderImg;

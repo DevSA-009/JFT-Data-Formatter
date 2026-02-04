@@ -1,10 +1,10 @@
 // src/app.ts
-import { FormatType, STORAGE_KEYS } from "./types";
-import { DataProcessor } from "./dataProcessor";
-import { ImageHandler } from "./imageHandler";
-import { HTMLGenerator } from "./htmlGenerator";
 import { ColumnResizer } from "./columnResizer";
-import { showToast, getElement } from "./utils";
+import { DataProcessor } from "./dataProcessor";
+import { HTMLGenerator } from "./htmlGenerator";
+import { ImageHandler } from "./imageHandler";
+import { FormatType, STORAGE_KEYS } from "./types";
+import { getElement, showToast } from "./utils";
 
 export class OrderFormatterApp {
   private dp = new DataProcessor();
@@ -52,7 +52,7 @@ export class OrderFormatterApp {
 
   private formatOrders(): void {
     const ta = getElement<HTMLTextAreaElement>("inputText");
-    const pn = getElement<HTMLInputElement>("partyName");
+    const pn = getElement<HTMLInputElement>("clientName");
     const jt = getElement<HTMLSelectElement>("jerseyType");
     const ft = getElement<HTMLSelectElement>("fabricsType");
     const fr = document.querySelector<HTMLInputElement>(
@@ -100,7 +100,7 @@ export class OrderFormatterApp {
   }
 
   private regenerateOutput(): void {
-    const pn = getElement<HTMLInputElement>("partyName");
+    const pn = getElement<HTMLInputElement>("clientName");
     const jt = getElement<HTMLSelectElement>("jerseyType");
     const ft = getElement<HTMLSelectElement>("fabricsType");
     const out = getElement("output");
@@ -134,7 +134,7 @@ export class OrderFormatterApp {
   }
 
   private copyAsPlainText(): void {
-    const pn = getElement<HTMLInputElement>("partyName");
+    const pn = getElement<HTMLInputElement>("clientName");
     const jt = getElement<HTMLSelectElement>("jerseyType");
     const ft = getElement<HTMLSelectElement>("fabricsType");
     const text = this.dp.generatePlainText(
