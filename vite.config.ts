@@ -1,10 +1,10 @@
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  base: "./",
+  base: "/jft-data-formatter/",
   build: {
     outDir: "dist",
-    assetsDir: "assets",
+    assetsDir: "static",
     emptyOutDir: true,
   },
 });
