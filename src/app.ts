@@ -3,7 +3,7 @@ import { ColumnResizer } from "./columnResizer";
 import { DataProcessor } from "./dataProcessor";
 import { HTMLGenerator } from "./htmlGenerator";
 import { ImageHandler } from "./imageHandler";
-import { FormatType, STORAGE_KEYS } from "./types";
+import { STORAGE_KEYS } from "./types";
 import { getElement, showToast } from "./utils";
 
 export class OrderFormatterApp {

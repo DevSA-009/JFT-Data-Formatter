@@ -77,8 +77,6 @@ export interface ValidationResult {
   reason?: keyof TableBaseHeads;
 }
 
-export type FormatType = "format1" | "format2";
-
 export type ToastType = "info" | "success" | "error";
 
 export const SIZE_ORDER = [
