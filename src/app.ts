@@ -3,7 +3,7 @@ import { ColumnResizer } from "./columnResizer";
 import { DataProcessor } from "./dataProcessor";
 import { HTMLGenerator } from "./htmlGenerator";
 import { ImageHandler } from "./imageHandler";
-import { STORAGE_KEYS } from "./types";
+import { JerseyType, OrderKeywords, STORAGE_KEYS } from "./types";
 import { getElement, showToast } from "./utils";
 
 export class OrderFormatterApp {
@@ -167,7 +167,7 @@ export class OrderFormatterApp {
       clientName?.value || "",
       clientAddress?.value || "",
       clientContact?.value || "",
-      jt?.value || "POLO",
+      jt?.value || OrderKeywords.POLO,
       ft?.value || "PP",
     );
     navigator.clipboard
@@ -181,8 +181,10 @@ export class OrderFormatterApp {
       showToast("No valid data", "error");
       return;
     }
+    const jt = (getElement<HTMLSelectElement>("jerseyType")?.value ||
+      OrderKeywords.POLO) as JerseyType;
     navigator.clipboard
-      .writeText(this.dp.exportToJSON())
+      .writeText(this.dp.exportToJSON(jt))
       .then(() => showToast("JSON copied", "success"))
       .catch(() => showToast("Failed", "error"));
   }

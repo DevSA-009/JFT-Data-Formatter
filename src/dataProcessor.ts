@@ -2,10 +2,12 @@
 import {
   AnalysisResult,
   DataForJson,
+  JerseyType,
   OrderKeywords,
   OrderRow,
   RIBKey,
   SIZE_ORDER,
+  SleeveKey,
   SummaryData,
 } from "./types";
 import {
@@ -186,14 +188,14 @@ export class DataProcessor {
     return text;
   }
 
-  exportToJSON(): string {
+  exportToJSON(jerseyType: JerseyType): string {
     // Create all sizes with empty structure first
     const groupedData = SIZE_ORDER.reduce((acc, size) => {
       acc[size] = {
         SUMMARY: {
           SLEEVE: {
-            LONG: { COUNT: 0, RIB: "NO" as RIBKey },
-            SHORT: { COUNT: 0, RIB: "NO" as RIBKey },
+            LONG: 0,
+            SHORT: 0,
           },
           PANT: {
             LONG: 0,
@@ -205,6 +207,14 @@ export class DataProcessor {
       return acc;
     }, {} as DataForJson);
 
+    const basic = {
+      type: jerseyType,
+      rib: {
+        type: OrderKeywords.NO as RIBKey,
+        apply: [] as SleeveKey[],
+      },
+    };
+
     const filtered = this.validRows.filter((r) => r.VALID);
 
     filtered.forEach((item) => {
@@ -215,11 +225,15 @@ export class DataProcessor {
       const data = groupedData[SIZE].DATA;
 
       // Update sleeve count
-      summary.SLEEVE[SLEEVE].COUNT++;
+      summary.SLEEVE[SLEEVE]++;
 
       // If there's a rib, update it (last one wins)
       if (RIB !== "NO") {
-        summary.SLEEVE[SLEEVE].RIB = RIB;
+        basic.rib.type = RIB;
+        const currentRIBApply = basic.rib.apply;
+        if (!currentRIBApply.includes(SLEEVE)) {
+          currentRIBApply.push(SLEEVE);
+        }
       }
 
       // Update pant count
@@ -231,6 +245,13 @@ export class DataProcessor {
       data.push({ NAME, NUMBER });
     });
 
-    return JSON.stringify(groupedData, null, 0);
+    return JSON.stringify(
+      {
+        basic,
+        details: groupedData,
+      },
+      null,
+      0,
+    );
   }
 }

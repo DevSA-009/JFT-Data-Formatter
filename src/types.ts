@@ -9,6 +9,8 @@ export enum OrderKeywords {
   LONG = "LONG",
   SHORT = "SHORT",
   PANT = "PANT",
+  POLO = "POLO",
+  TSHIRT = "TSHIRT",
   RIB = "RIB",
   CUFF = "CUFF",
   YES = "YES",
@@ -117,10 +119,12 @@ export const PLACEHOLDER_IMAGE = placeHolderImg;
 export type DataForJson = Record<
   SizeKey,
   {
-    SUMMARY: {
-      SLEEVE: Record<SleeveKey, { RIB: RIBKey; COUNT: 0 }>;
-      PANT: Record<SleeveKey, number>;
-    };
+    SUMMARY: Record<
+      OrderKeywords.SLEEVE | OrderKeywords.PANT,
+      Record<SleeveKey, number>
+    >;
     DATA: Record<OrderKeywords.NAME | OrderKeywords.NUMBER, string>[];
   }
 >;
+
+export type JerseyType = OrderKeywords.POLO | OrderKeywords.TSHIRT;
