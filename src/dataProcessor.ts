@@ -209,10 +209,12 @@ export class DataProcessor {
 
     const basic = {
       type: jerseyType,
+      sleeve: [] as SleeveKey[],
       rib: {
         type: OrderKeywords.NO as RIBKey,
         apply: [] as SleeveKey[],
       },
+      pant: [] as SleeveKey[],
     };
 
     const filtered = this.validRows.filter((r) => r.VALID);
@@ -227,6 +229,12 @@ export class DataProcessor {
       // Update sleeve count
       summary.SLEEVE[SLEEVE]++;
 
+      // update basic sleeve
+      const curBasicSlv = basic.sleeve;
+      if (!curBasicSlv.includes(SLEEVE)) {
+        curBasicSlv.push(SLEEVE);
+      }
+
       // If there's a rib, update it (last one wins)
       if (RIB !== "NO") {
         basic.rib.type = RIB;
@@ -239,6 +247,11 @@ export class DataProcessor {
       // Update pant count
       if (PANT !== "NO") {
         summary.PANT[PANT]++;
+        // update basic pant
+        const curBasicPant = basic.pant;
+        if (!curBasicPant.includes(PANT)) {
+          curBasicPant.push(PANT);
+        }
       }
 
       // Add player data
